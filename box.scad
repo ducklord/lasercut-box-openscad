@@ -14,6 +14,7 @@ module box(width, height, depth, thickness,
            open = false,
            inset = 0,
            dividers = [ 0, 0 ],
+           finger_dividers = false,
            holes = [],
            hole_dia = 0,
            ears = 0,
@@ -97,8 +98,8 @@ module box(width, height, depth, thickness,
       }
   }
 
-  module w_divider() { cut_w_divider() translate([0, t, 0]) panel2d(w, h-t); }
-  module h_divider() { cut_h_divider() translate([0, t, 0]) panel2d(d, h-t); }
+  module w_divider() { cut_w_divider() panel2d(w, h); }
+  module h_divider() { cut_h_divider() panel2d(d, h); }
 
   // Panels positioned in 3D
   module front3d() {
@@ -240,6 +241,13 @@ module box(width, height, depth, thickness,
   module cut_w_divider() {
     difference() {
       children();
+      if (finger_dividers) {
+	translate([0,inset]) invcuts(w);
+	if (keep_top && (ears_radius == 0)) movecutstop(w, h) invcuts(w);
+      } else {
+	square([w, t]);
+	if (ears_radius == 0) translate([0, h - t]) square([w, t]);
+      }
       movecutsleft(w, h) invcuts(h, ri = thickness*2);
       movecutsright(w, h) invcuts(h, li = thickness*2);
       if (dividers[1] > 0) {
@@ -254,6 +262,13 @@ module box(width, height, depth, thickness,
   module cut_h_divider() {
     difference() {
       children();
+      if (finger_dividers) {
+	translate([0,inset]) invcuts(d);
+	if (keep_top && (ears_radius == 0)) movecutstop(d, h) invcuts(d);
+      } else {
+	square([d, t]);
+	if (ears_radius == 0) translate([0, h - t]) square([d, t]);
+      }
       movecutsleft(d, h) invcuts(h, ri = thickness*2);
       movecutsright(d, h) invcuts(h, li = thickness*2);
       if (dividers[0] > 0) {
@@ -272,6 +287,19 @@ module box(width, height, depth, thickness,
       movecutstop(w, d) invcuts(w);
       movecutsleft(w, d) translate([t,0]) invcuts(d-2*t);
       movecutsright(w, d) translate([t,0]) invcuts(d-2*t);
+      if (finger_dividers) {
+	if (dividers[0] > 0) {
+	  ndivs = dividers[0]+1;
+	  for (i = [d/ndivs : d/ndivs : d-d/ndivs])
+	    movecutsleft(w, d) movecuts(i-t/2, 0) cuts(w);
+	}
+
+	if (dividers[1] > 0) {
+	  ndivs = dividers[1]+1;
+	  for (i = [w/ndivs : w/ndivs : w-w/ndivs])
+	    movecuts(i-t/2, 0) cuts(d);
+	}
+      }
     }
   }
 
