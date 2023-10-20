@@ -133,7 +133,19 @@ module box(width, height, depth, thickness,
     }
   }
 
-  module w_divider() { cut_w_divider() translate([0, t, 0]) panel2d(w, h-t); }
+  module w_divider() {
+    difference() {
+      cut_w_divider() translate([0, t, 0]) panel2d(w, h-t);
+      if (airgap_radius) {
+        union() {
+          translate([w/2 - airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 + airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 - airgap_width/2, h - airgap_radius])
+            square(airgap_width, airgap_radius);
+        }
+      }
+    }
+  }
   module h_divider() { cut_h_divider() translate([0, t, 0]) panel2d(d, h-t); }
 
   // Panels positioned in 3D
