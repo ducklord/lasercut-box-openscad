@@ -23,6 +23,8 @@ module box(width, height, depth, thickness,
            hole_width = false,
            kerf = 0.07,
            labels = false,
+           finger_cutout_radius = 0,
+           finger_cutout_offset = 0,
            explode = 0,
            spacing = 0)
 {
@@ -85,6 +87,24 @@ module box(width, height, depth, thickness,
   module hole(center) {
     translate(center) circle(d = hole_dia);
   }
+
+  module sector(radius, angles, fn = 24) {
+    r = radius / cos(180 / fn);
+    step = -360 / fn;
+
+    points = concat([[0, 0]],
+        [for(a = [angles[0] : step : angles[1] - 360]) 
+            [r * cos(a), r * sin(a)]
+        ],
+        [[r * cos(angles[1]), r * sin(angles[1])]]
+    );
+
+    difference() {
+        circle(radius, $fn = fn);
+        polygon(points);
+    }
+  }
+
   module front() {
     cut_front() difference() {
       union()
@@ -98,6 +118,9 @@ module box(width, height, depth, thickness,
           hole(holes[i]);
       if (ears_radius > 0)
         ears_inner(true);
+      if (finger_cutout_radius > 0)
+        translate([w/2, h - finger_cutout_offset])
+          sector(finger_cutout_radius, [180, 360], 64);
     }
   }
 
