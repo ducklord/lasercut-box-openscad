@@ -25,6 +25,8 @@ module box(width, height, depth, thickness,
            labels = false,
            finger_cutout_radius = 0,
            finger_cutout_offset = 0,
+           airgap_radius = 0,
+           airgap_width = 0,
            explode = 0,
            spacing = 0)
 {
@@ -82,6 +84,13 @@ module box(width, height, depth, thickness,
           hole([w-holes[i][0], holes[i][1]]);
       if (ears_radius > 0)
         ears_inner(false);
+      if (airgap_radius) {
+        union() {
+          translate([w/2 - airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 + airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 - airgap_width/2, h - airgap_radius]) square(airgap_width, airgap_radius);
+        }
+      }
     }
   }
   module hole(center) {
