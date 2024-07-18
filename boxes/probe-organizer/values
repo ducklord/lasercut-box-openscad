@@ -1,0 +1,34 @@
+thickness = 3.0;
+compensated_thickness = thickness + 0.4;
+clearance = 1.0;
+number_of_inserts = 3;
+assembled=false;
+
+insert_width = 100;
+insert_height = 20; // inner insert height
+insert_depth = 160;
+
+inner_width = insert_width + 2 * thickness + clearance;
+inner_height = insert_height * number_of_inserts;
+inner_depth = insert_depth + 2 * thickness + clearance;
+
+outer_width = inner_width + 2 * thickness + clearance;
+outer_height = inner_depth + 2 * thickness; // + clearance?
+outer_depth = inner_height + thickness + clearance;
+
+//        Outer box
+// ------------------------
+// |                      |
+// |                      |
+// |                      |
+// ------------------------
+
+//         Inner box
+//  ----------------------
+//  |                    |
+//  |                    |
+//  ----------------------
+
+//          Insert
+//   |                  |
+//   --------------------
