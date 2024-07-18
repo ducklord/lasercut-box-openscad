@@ -9,7 +9,7 @@ insert_height = 20; // inner insert height
 insert_depth = 160;
 
 inner_width = insert_width + 2 * thickness + clearance;
-inner_height = insert_height * number_of_inserts;
+inner_height = (insert_height + 1 * thickness) * number_of_inserts;
 inner_depth = insert_depth + 2 * thickness + clearance;
 
 outer_width = inner_width + 2 * thickness + clearance;
