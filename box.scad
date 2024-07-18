@@ -21,8 +21,12 @@ module box(width, height, depth, thickness,
            ears = 0,
            assemble = false,
            hole_width = false,
-           kerf = 0.0,
+           kerf = 0.07,
            labels = false,
+           finger_cutout_radius = 0,
+           finger_cutout_offset = 0,
+           airgap_radius = 0,
+           airgap_width = 0,
            explode = 0,
            spacing = 0)
 {
@@ -82,11 +86,36 @@ module box(width, height, depth, thickness,
           hole([w-holes[i][0], holes[i][1]]);
       if (ears_radius > 0)
         ears_inner(false);
+      if (airgap_radius) {
+        union() {
+          translate([w/2 - airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 + airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 - airgap_width/2, h - airgap_radius]) square(airgap_width, airgap_radius);
+        }
+      }
     }
   }
   module hole(center) {
     translate(center) circle(d = hole_dia);
   }
+
+  module sector(radius, angles, fn = 24) {
+    r = radius / cos(180 / fn);
+    step = -360 / fn;
+
+    points = concat([[0, 0]],
+        [for(a = [angles[0] : step : angles[1] - 360]) 
+            [r * cos(a), r * sin(a)]
+        ],
+        [[r * cos(angles[1]), r * sin(angles[1])]]
+    );
+
+    difference() {
+        circle(radius, $fn = fn);
+        polygon(points);
+    }
+  }
+
   module front() {
     cut_front() difference() {
       union()
@@ -100,10 +129,25 @@ module box(width, height, depth, thickness,
           hole(holes[i]);
       if (ears_radius > 0)
         ears_inner(true);
+      if (finger_cutout_radius > 0)
+        translate([w/2, h - finger_cutout_offset])
+          sector(finger_cutout_radius, [180, 360], 64);
     }
   }
 
-  module w_divider() { cut_w_divider() translate([0, t, 0]) panel2d(w, h-t); }
+  module w_divider() {
+    difference() {
+      cut_w_divider() translate([0, t, 0]) panel2d(w, h-t);
+      if (airgap_radius) {
+        union() {
+          translate([w/2 - airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 + airgap_width/2, h]) circle(r = airgap_radius);
+          translate([w/2 - airgap_width/2, h - airgap_radius])
+            square(airgap_width, airgap_radius);
+        }
+      }
+    }
+  }
   module h_divider() { cut_h_divider() translate([0, t, 0]) panel2d(d, h-t); }
 
   // Panels positioned in 3D
