@@ -1,0 +1,13 @@
+thickness = 3.0;
+compensated_thickness = thickness + 0.4;
+clearance = 1.0;
+assemble=false;
+
+extra = thickness + 2;
+
+dividers = [ 1, 1 ];
+
+width = 220;
+height = 40;
+depth = 160;
+
