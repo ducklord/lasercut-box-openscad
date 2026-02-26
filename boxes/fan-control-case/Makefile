@@ -8,10 +8,10 @@ all: $(TARGETS)
 
 png: $(PNG_TARGETS)
 
-%.svg: %.scad values Makefile
+%.svg: %.scad Makefile
 	openscad -o $@ $<
 
-%.png: %.scad values Makefile
+%.png: %.scad Makefile
 	openscad -D assembled=true -o $@ $<
 
 clean:
